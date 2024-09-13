@@ -1,0 +1,167 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link rel="icon" type="image/x-icon" href="{{ content.favicon.url }}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/admincss/styles.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <nav class="sidebar">
+      <div class="logo">
+        <h2>{{ request.session.user_name }}(Admin)</h2>
+      </div>
+      <ul class="nav-links">
+        <li><a href="{% url 'admin_dashboard' %}" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a href="{% url 'admin_profile' %}"><i class="fas fa-user-injured"></i>Profile</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle">
+            <i class="fas fa-calendar"></i> Appointments
+            <i class="fas fa-caret-down"></i>
+          </a>
+          <ul class="dropdown-menu" style="z-index: 1000;">
+            <li><a href="{% url 'admin_appointments' %}">Today Appointments</a></li>
+            <li><a href="{% url 'admin_appointments_history' %}">Appointments History</a></li>
+          </ul>
+        </li>
+        <li><a href="{% url 'department_list' %}"><i class="fas fa-hospital"></i> Department</a></li>
+        <li class="dropdown">
+          <a href="" class="dropdown-toggle"><i class="fas fa-user-md"></i> Doctors <i
+              class="fas fa-caret-down"></i></a>
+          <ul class="dropdown-menu" style="z-index: 1000;">
+            <li><a href="{% url 'add_doctor' %}">Add Doctor</a></li>
+            <li><a href="{% url 'admin_doctor_list' %}">View Doctors</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="" class="dropdown-toggle"><i class="fas fa-user-injured"></i> Patients <i
+          class="fas fa-caret-down"></i></a>
+          <ul class="dropdown-menu" style="z-index: 1000;">
+            <li><a href="{% url 'add_patient' %}">Add Patients</a></li>
+            <li><a href="{% url 'admin_patient_list' %}">View Patients</a></li>
+            <li><a href="{% url 'patients_list' %}">View Patients By Doctor</a></li>
+          </ul>
+        </li>
+        <li><a href="{% url 'website_setting' %}"><i class="fas fa-cog"></i> Website Setting</a></li>
+        <li><a href="{% url 'admin_update_password' %}"><i class="fas fa-key"></i> Change Password</a></li>
+        <li><a href="{% url 'logout' %}" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+      </ul>
+    </nav>
+
+    <main class="dashboard">
+      <header class="dashboard-header">
+        <h1>Admin Dashboard</h1>
+        <div class="user-profile">
+          <span>Admin</span>
+          <i class="fas fa-user-circle"></i>
+        </div>
+      </header>
+
+      <div class="website-info">
+        <h2>Website Information</h2>
+        <form action="{% url 'website_setting' %}" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+        <div class="website-info-container">
+            <div class="left-info">
+              <label for="website-name">Website Name</label>
+              <input type="text" id="website-name" name="title" value="{{ content.title }}">
+    
+              <label for="website-url">Website URL / Domain</label>
+              <input type="text" id="website-url" name="domain" value="{{ content.domain }}">
+
+    
+              <label for="copyright-title">Copyright Title</label>
+              <input type="text" id="copyright-title" name="copyright_text" value="{{ content.copyright_text }}">
+            </div>
+    
+            <div class="right-info">
+              <div class="file-upload">
+                <label for="logo-upload">Logo Upload</label>
+                <input type="file" id="logo-upload" name="logo_image">
+                <img src="{{ content.logo_image.url }}" alt="Current Logo" style="max-height: 100px; max-width: 100px;"/>
+              </div>
+            
+              <div class="file-upload">
+                <label for="favicon-upload">Favicon Upload</label>
+                <input type="file" id="favicon-upload" name="favicon">
+                <img src="{{ content.favicon.url }}" alt="Current Favicon" style="max-height: 50px; max-width: 50px;"/>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Update</button>
+          </div>
+        </form>
+      </div>
+    
+      <div class="website-info">
+        <h2>Footer Information</h2>
+        <form action="{% url 'website_setting' %}" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+        <div class="website-info-container">
+            <div class="left-info">
+              <label for="address">Address Line 1</label>
+              <input type="text" id="address-line1" name="address_line1" value="{{ content.address_line1 }}">
+    
+              <label for="address">Address Line 2</label>
+              <input type="text" id="address-line2" name="address_line2" value="{{ content.address_line2 }}">
+    
+              <label for="phone-number">Whatsapp Number</label>
+              <input type="text" id="phone-number" name="phone_number" value="{{ content.phone_number }}">
+    
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" value="{{ content.email }}">
+            </div>
+    
+            <div class="right-info">
+              <label for="about-text">About the Company</label>
+              <textarea id="about-text" name="about_text">{{ content.about_text }}</textarea>
+              <div class="file-upload">
+                <label for="logo-upload">FAQ Image</label>
+                <input type="file" id="logo-upload" name="faq_image">
+                <img src="{{ content.faq_image.url }}" alt="Current Logo" style="max-height: 100px; max-width: 100px;"/>
+              </div>
+            </div>
+            <button type="submit" class="btn-submit">Update</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="website-info">
+        <h2>FAQ Information</h2>
+        <form action="{% url 'website_setting' %}" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+        <div class="website-info-container">
+            <div class="left-info">
+              <label for="faq-question">Question</label>
+              <input type="text" id="faq-question" name="new_question" placeholder="Enter question">
+      
+              <label for="faq-answer">Answer</label>
+              <input type="text" id="faq-answer" name="new_answer" placeholder="Enter answer">
+              <button type="submit" class="btn-submit">Add FAQ</button>
+            </div>
+          </form>
+      
+          <!-- Display Existing FAQs -->
+          <div class="right-info">
+            <h3>Existing FAQs</h3>
+            {% for faq in faqs %}
+              <div class="faq-item">
+                <p><strong>Q{{ forloop.counter }}:</strong> {{ faq.question }}</p>
+                <p><strong>A:</strong> {{ faq.answer }}</p>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>      
+
+    </main>
+  </div>
+
+  <script type="text/javascript" src="{% static 'js/adminjs/script.js' %}"></script>
+</body>
+
+</html>

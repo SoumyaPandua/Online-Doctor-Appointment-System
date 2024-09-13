@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link rel="icon" type="image/x-icon" href="{{ content.favicon.url }}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/admincss/styles.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <nav class="sidebar">
+      <div class="logo">
+        <h2>{{ request.session.user_name }}(Admin)</h2>
+      </div>
+      <ul class="nav-links">
+        <li><a href="{% url 'admin_dashboard' %}" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a href="{% url 'admin_profile' %}"><i class="fas fa-user-injured"></i>Profile</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle">
+            <i class="fas fa-calendar"></i> Appointments
+            <i class="fas fa-caret-down"></i>
+          </a>
+          <ul class="dropdown-menu" style="z-index: 1000;">
+            <li><a href="{% url 'admin_appointments' %}">Today Appointments</a></li>
+            <li><a href="{% url 'admin_appointments_history' %}">Appointments History</a></li>
+          </ul>
+        </li>
+        <li><a href="{% url 'department_list' %}"><i class="fas fa-hospital"></i> Department</a></li>
+        <li class="dropdown">
+          <a href="" class="dropdown-toggle"><i class="fas fa-user-md"></i> Doctors <i
+              class="fas fa-caret-down"></i></a>
+          <ul class="dropdown-menu" style="z-index: 1000;">
+            <li><a href="{% url 'add_doctor' %}">Add Doctor</a></li>
+            <li><a href="{% url 'admin_doctor_list' %}">View Doctors</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="" class="dropdown-toggle"><i class="fas fa-user-injured"></i> Patients <i
+          class="fas fa-caret-down"></i></a>
+          <ul class="dropdown-menu" style="z-index: 1000;">
+            <li><a href="{% url 'add_patient' %}">Add Patients</a></li>
+            <li><a href="{% url 'admin_patient_list' %}">View Patients</a></li>
+            <li><a href="{% url 'patients_list' %}">View Patients By Doctor</a></li>
+          </ul>
+        </li>
+        <li><a href="{% url 'website_setting' %}"><i class="fas fa-cog"></i> Website Setting</a></li>
+        <li><a href="{% url 'admin_update_password' %}"><i class="fas fa-key"></i> Change Password</a></li>
+        <li><a href="{% url 'logout' %}" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+      </ul>
+    </nav>
+
+    <main class="dashboard">
+      <header class="dashboard-header">
+        <h1>Admin Dashboard</h1>
+        <div class="user-profile">
+          <span>Admin</span>
+          <i class="fas fa-user-circle"></i>
+        </div>
+      </header>
+
+      <div class="box-container">
+        <div class="box">
+          <h2>Patient Information</h2>
+          <form class="form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="full-name">Full Name</label>
+                <input type="text" id="full-name" name="full-name" value="{{ appointment.patient_name }}" readonly>
+              </div>
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" value="{{ appointment.patient_email }}" readonly>
+              </div>
+              <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" name="phone" value="{{ appointment.patient_phone }}" readonly>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="age">Age</label>
+                <input type="number" id="age" name="age" value="{{ appointment.patient_age }}" readonly>
+              </div>
+              <div class="form-group">
+                <label for="gender">Gender</label>
+                <select id="gender" name="gender" disabled>
+                  <option value="male" {% if appointment.patient_gender=='male' %}selected{% endif %}>Male</option>
+                  <option value="female" {% if appointment.patient_gender=='female' %}selected{% endif %}>Female
+                  </option>
+                  <option value="other" {% if appointment.patient_gender=='other' %}selected{% endif %}>Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="dob">Date of Birth</label>
+                <input type="date" id="dob" name="dob" value="{{ appointment.patient_dob|date:'Y-m-d' }}" readonly>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="comment">Comment</label>
+                <textarea id="comment" name="comment" readonly>{{ appointment.patient_comment }}</textarea>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Second Box -->
+        <div class="box">
+          <h2>Appointment Details</h2>
+          <form class="form" method="post">
+            {% csrf_token %}
+            <div class="form-row">
+              <div class="form-group">
+                <label for="status">Appointment Status</label>
+                <select id="status" name="status">
+                  <option value="booked" {% if appointment.status=='booked' %}selected{% endif %}>Booked</option>
+                  <option value="completed" {% if appointment.status=='completed' %}selected{% endif %}>Completed
+                  </option>
+                  <option value="cancelled" {% if appointment.status=='cancelled' %}selected{% endif %}>Cancelled
+                  </option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="fees">Consultant Fees</label>
+                <input type="number" id="fees" name="fees" value="{{ appointment.doctor.consultant_fees }}" readonly>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="fees-status">Consultant Fees Status</label>
+                <select id="fees-status" name="fees-status">
+                  <option value="pending" {% if appointment.consultation_status=='pending' %}selected{% endif %}>Pending
+                  </option>
+                  <option value="completed" {% if appointment.consultation_status=='completed' %}selected{% endif %}>
+                    Completed</option>
+                  <option value="failed" {% if appointment.consultation_status=='failed' %}selected{% endif %}>Failed
+                  </option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="doctor-comment">Doctor Comment</label>
+                <textarea id="doctor-comment" name="doctor-comment">{{ appointment.doctor_comment }}</textarea>
+              </div>
+            </div>
+            <button type="submit" class="btn view-btn">Update</button>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+<script type="text/javascript" src="{% static 'js/adminjs/script.js' %}"></script>
+
+</html>

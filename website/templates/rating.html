@@ -1,0 +1,170 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ content.title }}</title>
+  <link rel="icon" type="image/x-icon"
+    href="{% if content.favicon %}{{ content.favicon.url }}{% else %}{% static 'images/default_favicon.ico' %}{% endif %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/websitecss/styles.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <img
+          src="{% if content.logo_image %}{{ content.logo_image.url }}{% else %}{% static 'images/default_logo.png' %}{% endif %}"
+          alt="Doctor Appointment Logo">
+      </div>
+      <ul class="nav-links">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About Us</a></li>
+        <li><a href="#departments">Departments</a></li>
+        <li><a href="#faq-section">FAQ</a></li>
+        <li><a href="#testimonial-section">Review</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li class="profile-menu">
+          {% if request.session.user_id %}
+          <a href="#">
+            <i class="fas fa-user-circle"></i> {{ request.session.user_name }}
+          </a>
+          <ul class="dropdown-menu">
+            {% if request.session.role == 'admin' %}
+            <li><a href="{% url 'admin_dashboard' %}">My Profile</a></li>
+            {% elif request.session.role == 'doctor' %}
+            <li><a href="{% url 'doctor_dashboard' %}">My Profile</a></li>
+            {% elif request.session.role == 'patient' %}
+            <li><a href="{% url 'patient_profile' %}">My Profile</a></li>
+            {% endif %}
+            <hr>
+            <li><a href="{% url 'logout' %}">Log Out</a></li>
+          </ul>
+          {% else %}
+          <a href="#">
+            <i class="fas fa-sign-in-alt"></i> Login
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'admin_login' %}">Admin</a></li>
+            <hr>
+            <li><a href="{% url 'doctor_login' %}">Doctor</a></li>
+            <hr>
+            <li><a href="{% url 'patient_login' %}">Patient</a></li>
+          </ul>
+          {% endif %}
+        </li>
+      </ul>
+      <div class="hamburger">
+        <i class="fas fa-bars"></i>
+      </div>
+    </nav>
+  </header>
+
+  <section id="rating-section" style="padding: 20px;">
+    <h2>Rate Us</h2>
+    <form id="rating-form" style="max-width: 500px; margin: auto;" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="{{ patient.user.get_full_name }}" readonly style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #0077b6; border-radius: 5px;">
+      </div>
+      <div class="form-group">
+        <label for="description">Comment (max 20 words):</label>
+        <textarea id="description" name="comment" maxlength="100" required style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #0077b6; border-radius: 5px;"></textarea>
+      </div>
+       <div class="form-group">
+          <label for="photo">Image:</label>
+          <input type="file" id="photo" name="image" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #0077b6; border-radius: 5px;" readonly required>
+          <img src="{{ patient.profile_image.url }}" alt="Patient Image" style="height: 100px; width: 100px; border-radius: 50%;">
+        </div>
+      <div class="form-group">
+        <label>Rating:</label>
+        <div class="star-rating" style="font-size: 24px; color: #ccc;">
+          <i class="fas fa-star" data-value="1"></i>
+          <i class="fas fa-star" data-value="2"></i>
+          <i class="fas fa-star" data-value="3"></i>
+          <i class="fas fa-star" data-value="4"></i>
+          <i class="fas fa-star" data-value="5"></i>
+        </div>
+        <input type="hidden" id="rating" name="rating" required>
+      </div>
+      <button type="submit" style="padding: 10px 20px; background-color: #0077b6; color: #caf0f8; border: none; border-radius: 5px; cursor: pointer;">Submit</button>
+    </form>
+  </section>
+  
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-section contact-info">
+        <div class="contact-item">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>{{ content.address_line1 }}</span>
+          <span>{{ content.address_line2 }}</span>
+        </div>
+        <div class="contact-item">
+          <i class="fa-brands fa-whatsapp"></i>
+          <span>{{ content.phone_number }}</span>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-envelope"></i>
+          <span><a href="mailto:{{ content.email }}">{{ content.email }}</a></span>
+        </div>
+        <div class="contact-item">
+          <i class="fa-solid fa-copyright"></i>
+          <span><a href="#">{{ content.copyright_text }}</a></span>
+        </div>
+      </div>
+      <div class="footer-section about">
+        <h3>About the Company</h3>
+        <p>{{ content.about_text }}</p>
+        <div class="social">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#"><i class="fab fa-github"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const slider = document.querySelector('.slider');
+    const slides = document.querySelectorAll('.slide');
+    let currentIndex = 0;
+
+    function moveToNextSlide() {
+      currentIndex++;
+      if (currentIndex >= slides.length) {
+        currentIndex = 0;
+      }
+      slider.style.transform = `translateX(-${currentIndex * 100}%)`;
+    }
+
+    setInterval(moveToNextSlide, 5000);
+  });
+
+  const stars = document.querySelectorAll('.star-rating i');
+const ratingInput = document.getElementById('rating');
+
+stars.forEach(star => {
+  star.addEventListener('click', () => {
+    const ratingValue = star.getAttribute('data-value');
+    ratingInput.value = ratingValue;
+
+    stars.forEach((s, index) => {
+      if (index < ratingValue) {
+        s.style.color = '#ffdd00';
+      } else {
+        s.style.color = '#ccc';
+      }
+    });
+  });
+});
+</script>
+<script type="text/javascript" src="{% static 'js/websitejs/script.js' %}"></script>
+</html>

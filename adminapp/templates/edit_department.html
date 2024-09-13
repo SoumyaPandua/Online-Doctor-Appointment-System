@@ -1,0 +1,90 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link rel="icon" type="image/x-icon" href="{{ content.favicon.url }}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/admincss/styles.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <nav class="sidebar">
+      <div class="logo">
+        <h2>{{ request.session.user_name }}(Admin)</h2>
+      </div>
+      <ul class="nav-links">
+        <li><a href="{% url 'admin_dashboard' %}" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a href="{% url 'admin_profile' %}"><i class="fas fa-user-injured"></i>Profile</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle">
+            <i class="fas fa-calendar"></i> Appointments
+            <i class="fas fa-caret-down"></i>
+          </a>
+          <ul class="dropdown-menu" style="z-index: 1000;">
+            <li><a href="{% url 'admin_appointments' %}">Today Appointments</a></li>
+            <li><a href="{% url 'admin_appointments_history' %}">Appointments History</a></li>
+          </ul>
+        </li>
+        <li><a href="{% url 'department_list' %}"><i class="fas fa-hospital"></i> Department</a></li>
+        <li class="dropdown">
+          <a href="" class="dropdown-toggle"><i class="fas fa-user-md"></i> Doctors <i
+              class="fas fa-caret-down"></i></a>
+          <ul class="dropdown-menu" style="z-index: 1000;">
+            <li><a href="{% url 'add_doctor' %}">Add Doctor</a></li>
+            <li><a href="{% url 'admin_doctor_list' %}">View Doctors</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="" class="dropdown-toggle"><i class="fas fa-user-injured"></i> Patients <i
+          class="fas fa-caret-down"></i></a>
+          <ul class="dropdown-menu" style="z-index: 1000;">
+            <li><a href="{% url 'add_patient' %}">Add Patients</a></li>
+            <li><a href="{% url 'admin_patient_list' %}">View Patients</a></li>
+            <li><a href="{% url 'patients_list' %}">View Patients By Doctor</a></li>
+          </ul>
+        </li>
+        <li><a href="{% url 'website_setting' %}"><i class="fas fa-cog"></i> Website Setting</a></li>
+        <li><a href="{% url 'admin_update_password' %}"><i class="fas fa-key"></i> Change Password</a></li>
+        <li><a href="{% url 'logout' %}" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+      </ul>
+    </nav>
+
+    <main class="dashboard">
+      <header class="dashboard-header">
+        <h1>Admin Dashboard</h1>
+        <div class="user-profile">
+          <span>Admin</span>
+          <i class="fas fa-user-circle"></i>
+        </div>
+      </header>
+
+      <div class="website-info">
+        <h2>Edit Department</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="website-info-container">
+                <div class="left-info">
+                    <label for="website-name">Department name</label>
+                    <input type="text" name="name" value="{{ department.name }}" required>
+                </div>
+                <div class="left-info">
+                    <div class="file-upload">
+                        <label for="favicon-upload">Department Image</label>
+                        <input type="file" name="image" id="favicon-upload">
+                        <img src="{{ department.image.url }}" alt="{{ department.name }} Image" width="100">
+                    </div>
+                </div>  
+                <Button type="submit" class="btn-submit">Update</Button>
+            </div>
+        </form>
+    </div>               
+    </main>
+  </div>
+
+  <script type="text/javascript" src="{% static 'js/adminjs/script.js' %}"></script>
+</body>
+
+</html>

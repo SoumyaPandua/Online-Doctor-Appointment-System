@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link rel="icon" type="image/x-icon" href="{{ content.favicon.url }}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/doctorcss/styles.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <nav class="sidebar">
+      <div class="logo">
+        <h2>{{ request.session.user_name }}({{ request.session.department_name }})</h2>
+      </div>
+      <ul class="nav-links">
+        <li><a href="{% url 'doctor_dashboard' %}" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li class="dropdown">
+          <a href="" class="dropdown-toggle"><i class="fas fa-calendar"></i> Appointments <i class="fas fa-caret-down"></i></a>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'doctor_appointments' %}"><i class="fas fa-circle"></i> All Appointments</a></li>
+            <li><a href="{% url 'all_appointments' %}"><i class="fas fa-circle"></i> Appointments History</a></li>
+          </ul>
+        </li>
+        <li><a href="{% url 'doctor_patient_list' %}"><i class="fas fa-user-injured"></i> Patients</a></li>
+        <li><a href="{% url 'doctor_profile' %}"><i class="fas fa-user-shield"></i> Profile</a></li>
+        <li><a href="{% url 'doctor_timing' %}"><i class="fas fa-cog"></i> Timings</a></li>
+        <li><a href="{% url 'doctor_update_password' %}"><i class="fas fa-key"></i> Change Password</a></li>
+        <li><a href="{% url 'logout' %}" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+      </ul>
+    </nav>
+
+    <div class="main-content">
+      <header>
+        <h2>Doctor Dashboard</h2>
+        <div class="date"></div>
+        <div class="user-profile">
+          <span>{{ request.session.user_name }}</span>
+          <i class="fas fa-user"></i>
+        </div>
+      </header>
+
+      <section class="stats">
+        <div class="stat-card">
+            <div class="stat-text">
+                <p>Total Appointments</p>
+                <h2>{{ total_appointments }}</h2>
+            </div>
+            <div class="stat-icon">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-text">
+                <p>Future Appointments</p>
+                <h2>{{ future_appointments }}</h2>
+            </div>
+            <div class="stat-icon">
+                <i class="fas fa-calendar-plus"></i>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-text">
+                <p>Completed Appointments</p>
+                <h2>{{ completed_appointments }}</h2>
+            </div>
+            <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+        </div>
+    </section>    
+    </div>
+  </div>
+</body>
+<script type="text/javascript" src="{% static 'js/doctorjs/script.js' %}"></script>
+</html>

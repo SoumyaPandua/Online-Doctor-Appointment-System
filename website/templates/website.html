@@ -1,0 +1,255 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ content.title }}</title>
+  <link rel="icon" type="image/x-icon" href="{% if content.favicon %}{{ content.favicon.url }}{% else %}{% static 'images/default_favicon.ico' %}{% endif %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/websitecss/styles.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <img src="{% if content.logo_image %}{{ content.logo_image.url }}{% else %}{% static 'images/default_logo.png' %}{% endif %}" alt="Doctor Appointment Logo">
+      </div>
+      <ul class="nav-links">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About Us</a></li>
+        <li><a href="#departments">Departments</a></li>
+        <li><a href="#faq-section">FAQ</a></li>
+        <li><a href="#testimonial-section">Review</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li class="profile-menu">
+          {% if request.session.user_id %}
+              <a href="#">
+                  <i class="fas fa-user-circle"></i> {{ request.session.user_name }}
+              </a>
+              <ul class="dropdown-menu">
+                  {% if request.session.role == 'admin' %}
+                      <li><a href="{% url 'admin_dashboard' %}">My Profile</a></li>
+                  {% elif request.session.role == 'doctor' %}
+                      <li><a href="{% url 'doctor_dashboard' %}">My Profile</a></li>
+                  {% elif request.session.role == 'patient' %}
+                      <li><a href="{% url 'patient_profile' %}">My Profile</a></li>
+                  {% endif %}
+                  <hr>
+                  <li><a href="{% url 'logout' %}">Log Out</a></li>
+              </ul>
+          {% else %}
+              <a href="#">
+                  <i class="fas fa-sign-in-alt"></i> Login
+              </a>
+              <ul class="dropdown-menu">
+                  <li><a href="{% url 'admin_login' %}">Admin</a></li>
+                  <hr>
+                  <li><a href="{% url 'doctor_login' %}">Doctor</a></li>
+                  <hr>
+                  <li><a href="{% url 'patient_login' %}">Patient</a></li>
+              </ul>
+          {% endif %}
+      </li>      
+      </ul>
+      <div class="hamburger">
+        <i class="fas fa-bars"></i>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Home Section -->
+  <section id="home" class="home-section">
+    <div class="home-content">
+      <h1>Welcome to {{ content.title }}</h1>
+      <p>Your health is our priority. Book an appointment with your preferred doctor today. We provide a comprehensive
+        healthcare service, ensuring you receive the best treatment available. Our team of highly skilled doctors is
+        committed to providing personalized care to meet your individual needs. Whether you're seeking routine check-ups
+        or specialized care, we have the right professional for you. Our appointment booking system is designed to be
+        quick and easy, so you can secure your preferred time slot with ease. Trust us to take care of your health; it's
+        what we do best. We are dedicated to maintaining the highest standards in patient care and satisfaction. Book
+        your appointment today and take the first step towards a healthier you.</p>
+
+      <a href="#book-appointment" class="btn-primary">Book Now</a>
+    </div>
+    <div class="home-image">
+      <img src="{% static 'images/home.jpeg' %}" alt="Home Image">
+    </div>
+  </section>
+
+  <!-- About Us Section -->
+  <section id="about" class="about-section">
+    <div class="about-content">
+      <h2>About Us</h2>
+      <p>Welcome to Doctor Appointment, where your health is our priority. We are dedicated to providing exceptional
+        healthcare services that are accessible, affordable, and of the highest quality. Our team of experienced doctors
+        and healthcare professionals is committed to ensuring that you receive the best care possible. At Doctor
+        Appointment, we believe in a patient-centered approach, where we listen to your needs, understand your concerns,
+        and offer personalized treatment plans. Our mission is to make healthcare convenient and stress-free for you and
+        your family. Join us in our journey to promote health and well-being for everyone.</p>
+    </div>
+    <div class="about-image">
+      <img src="{% static 'images/about2.jpg' %}" alt="About Us Image" style="width: 500px; height: 500px; border-radius: 50%;">
+    </div>
+  </section>
+
+  <!-- Departments Section -->
+<section id="departments" class="departments-section">
+  <h2>Our Departments</h2>
+  <input type="text" id="department-search" placeholder="Search for a department...">
+  <div class="departments-container">
+    <div class="departments-wrapper">
+      {% for department in departments %}
+      <div class="department" data-name="{{ department.name|lower }}">
+        <img src="{% if department.image %}{{ department.image.url }}{% else %}{% static 'images/default_department_image.jpg' %}{% endif %}" alt="{{ department.name }}">
+        <h3><a href="{% url 'department_detail' department_name=department.name %}" class="department-link">
+          {{ department.name }}
+        </a></h3>
+      </div>    
+      {% empty %}
+      <p id="no-results">No departments found.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+  <!-- FAQ SECTION -->
+  <section id="faq-section">
+    <div class="faq-container">
+      {% if content.faq_image %}
+        <img src="{{ content.faq_image.url }}" alt="FAQ Image" class="faq-image">
+      {% endif %}
+      <div class="faq-content">
+        <h2 class="faq-heading">FAQ</h2>
+        <input type="text" id="faq-search" placeholder="Search FAQs..." onkeyup="searchFAQs()">
+        <div id="faq-list">
+          {% for faq in faqs %}
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+              <span>{{ faq.question }}</span>
+              <i class="fas fa-plus"></i>
+            </div>
+            <div class="faq-answer">
+              {{ faq.answer }}
+              {% if faq.faq_image %}
+                <img src="{{ faq.faq_image.url }}" alt="FAQ Image" class="faq-image">
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+          <div class="no-results" style="display: none;">No Query Found. Please <a href="#contact">Contact Us</a>.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonial Section -->
+<section id="testimonial-section" class="testimonial-section">
+  <div class="testimonial-slider">
+    <h2>Testimonial</h2>
+    <div class="slider">
+      {% for rating in ratings %}
+      <div class="slide">
+        <div class="testimonial-card">
+          <img src="{{ rating.image.url }}" alt="{{ rating.user.get_full_name }}">
+          <h3>{{ rating.user.get_full_name }}</h3>
+          <div class="stars" style="font-size: 24px; color: #ccc;">
+            {% for i in "12345" %}
+            {% if forloop.counter <= rating.rating %}
+                <span style="color: #ffdd00; margin-right: 2px;">★</span>
+              {% else %}
+                <span style="color: #ccc;">★</span>
+              {% endif %}
+            {% endfor %}
+          </div>
+          <p>"{{ rating.comment }}" ~ [{{ rating.date }}]</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
+  <!-- Contact Us Section -->
+  <section id="contact" class="contact-section">
+    <h2>Contact Us</h2>
+    <div class="contact-content">
+      <div class="map-container">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31108.539771051786!2d77.61159277725005!3d12.935497768972464!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae144ed898fc2d%3A0x1681f38e8c00ae56!2sKoramangala%2C%20Bengaluru%2C%20Karnataka!5e0!3m2!1sen!2sin!4v1724087539319!5m2!1sen!2sin"
+          width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+      <div class="contact-form">
+        <form action="{% url 'website' %}" method="POST">
+          {% csrf_token %}
+          <label for="name">Name:</label>
+          <input type="text" id="name" name="name" required>
+        
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" required>
+        
+          <label for="message">Message:</label>
+          <textarea id="message" name="message" rows="5" required></textarea>
+        
+          <button type="submit">Send Message</button>
+        </form>        
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-section contact-info">
+        <div class="contact-item">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>{{ content.address_line1 }}</span>
+          <span>{{ content.address_line2 }}</span>
+        </div>
+        <div class="contact-item">
+          <i class="fa-brands fa-whatsapp"></i>
+          <span>{{ content.phone_number }}</span>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-envelope"></i>
+          <span><a href="mailto:{{ content.email }}">{{ content.email }}</a></span>
+        </div>
+        <div class="contact-item">
+          <i class="fa-solid fa-copyright"></i>
+          <span><a href="#">{{ content.copyright_text }}</a></span>
+        </div>
+      </div>
+      <div class="footer-section about">
+        <h3>About the Company</h3>
+        <p>{{ content.about_text }}</p>
+        <div class="social">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#"><i class="fab fa-github"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const slider = document.querySelector('.slider');
+    const slides = document.querySelectorAll('.slide');
+    let currentIndex = 0;
+    
+    function moveToNextSlide() {
+      currentIndex++;
+      if (currentIndex >= slides.length) {
+        currentIndex = 0;
+      }
+      slider.style.transform = `translateX(-${currentIndex * 100}%)`;
+    }
+    
+    setInterval(moveToNextSlide, 5000);
+  });
+</script>
+<script type="text/javascript" src="{% static 'js/websitejs/script.js' %}"></script>
+</html>

@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link rel="icon" type="image/x-icon" href="{{ content.favicon.url }}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/doctorcss/styles.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <nav class="sidebar">
+      <div class="logo">
+        <h2>{{ request.session.user_name }}({{ request.session.department_name }})</h2>
+      </div>
+      <ul class="nav-links">
+        <li><a href="{% url 'doctor_dashboard' %}" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li class="dropdown">
+          <a href="" class="dropdown-toggle"><i class="fas fa-calendar"></i> Appointments <i class="fas fa-caret-down"></i></a>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'doctor_appointments' %}"><i class="fas fa-circle"></i> All Appointments</a></li>
+            <li><a href="{% url 'all_appointments' %}"><i class="fas fa-circle"></i> Appointments History</a></li>
+          </ul>
+        </li>
+        <li><a href="{% url 'doctor_patient_list' %}"><i class="fas fa-user-injured"></i> Patients</a></li>
+        <li><a href="{% url 'doctor_profile' %}"><i class="fas fa-user-shield"></i> Profile</a></li>
+        <li><a href="{% url 'doctor_timing' %}"><i class="fas fa-cog"></i> Timings</a></li>
+        <li><a href="{% url 'doctor_update_password' %}"><i class="fas fa-key"></i> Change Password</a></li>
+        <li><a href="{% url 'logout' %}" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+      </ul>
+    </nav>
+
+    <div class="main-content">
+      <header>
+        <h2>Doctor Dashboard</h2>
+        <div class="date"></div>
+        <div class="user-profile">
+          <span>{{ request.session.user_name }}</span>
+          <i class="fas fa-user"></i>
+        </div>
+      </header>
+
+      <!-- Update Timings Section -->
+      <div class="update-timings-container">
+        <h2>Update Timings</h2>
+        <hr>
+        <div class="timing-details">
+          <p>Day: {{ timing.get_day_display }}</p>
+          <p>Shift: {{ timing.get_shift_display }}</p>
+        </div>
+        <form method="POST" action="">
+          {% csrf_token %}
+
+          <label for="start-time">Start Time:</label>
+          <input type="time" id="start-time" name="start-time" value="{{ timing.start_time|time:'H:i' }}">
+
+          <label for="end-time">End Time:</label>
+          <input type="time" id="end-time" name="end-time" value="{{ timing.end_time|time:'H:i' }}">
+
+          <label for="avg-consult-time">Avg Consultation Time:</label>
+          <select id="avg-consult-time" name="avg-consult-time">
+            <option value="10" {% if timing.avg_consult_time == 10 %}selected{% endif %}>10 Minutes</option>
+            <option value="15" {% if timing.avg_consult_time == 15 %}selected{% endif %}>15 Minutes</option>
+            <option value="20" {% if timing.avg_consult_time == 20 %}selected{% endif %}>20 Minutes</option>
+            <option value="25" {% if timing.avg_consult_time == 25 %}selected{% endif %}>25 Minutes</option>
+            <option value="30" {% if timing.avg_consult_time == 30 %}selected{% endif %}>30 Minutes</option>
+          </select>
+
+          <button type="submit" class="update-button">Update</button>
+        </form>
+      </div>
+      <script src="script.js"></script>
+</body>
+
+</html>

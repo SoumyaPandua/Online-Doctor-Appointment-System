@@ -1,0 +1,141 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ content.title }}</title>
+  <link rel="icon" type="image/x-icon" href="{% if content.favicon %}{{ content.favicon.url }}{% else %}{% static 'images/default_favicon.ico' %}{% endif %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/websitecss/styles.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <img src="{% if content.logo_image %}{{ content.logo_image.url }}{% else %}{% static 'images/default_logo.png' %}{% endif %}" alt="Doctor Appointment Logo">
+      </div>
+      <ul class="nav-links">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About Us</a></li>
+        <li><a href="#departments">Departments</a></li>
+        <li><a href="#faq-section">FAQ</a></li>
+        <li><a href="#testimonial-section">Review</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li class="profile-menu">
+          {% if request.session.user_id %}
+              <a href="#">
+                  <i class="fas fa-user-circle"></i> {{ request.session.user_name }}
+              </a>
+              <ul class="dropdown-menu">
+                  {% if request.session.role == 'admin' %}
+                      <li><a href="{% url 'admin_dashboard' %}">My Profile</a></li>
+                  {% elif request.session.role == 'doctor' %}
+                      <li><a href="{% url 'doctor_dashboard' %}">My Profile</a></li>
+                  {% elif request.session.role == 'patient' %}
+                      <li><a href="{% url 'patient_profile' %}">My Profile</a></li>
+                  {% endif %}
+                  <hr>
+                  <li><a href="{% url 'logout' %}">Log Out</a></li>
+              </ul>
+          {% else %}
+              <a href="#">
+                  <i class="fas fa-sign-in-alt"></i> Login
+              </a>
+              <ul class="dropdown-menu">
+                  <li><a href="{% url 'admin_login' %}">Admin</a></li>
+                  <hr>
+                  <li><a href="{% url 'doctor_login' %}">Doctor</a></li>
+                  <hr>
+                  <li><a href="{% url 'patient_login' %}">Patient</a></li>
+              </ul>
+          {% endif %}
+      </li>      
+      </ul>
+      <div class="hamburger">
+        <i class="fas fa-bars"></i>
+      </div>
+    </nav>
+  </header>
+
+  <section class="department-details">
+    <div class="department-content">
+      <div class="department-info">
+        <h1>{{ department.name }}</h1>
+        <p>Our Brain Department is devoted to addressing a broad spectrum of neurological conditions with expertise and compassion. Our team of neurologists and neurosurgeons provides comprehensive care for disorders such as stroke, epilepsy, neurodegenerative diseases, and brain tumors. </p>
+        <p>Utilizing state-of-the-art diagnostic tools and advanced treatment options, we focus on delivering personalized care plans to meet the unique needs of each patient. Our goal is to enhance neurological health and improve the quality of life through innovative therapies and dedicated support.</p>
+      </div>
+      <div class="department-image">
+        <img src="{{ department.image.url }}" alt="{{ department.name }}">
+      </div>
+    </div>
+
+    <section class="doctors">
+      <h1>Our Doctors</h1>
+      <div class="search-container">
+        <input type="text" id="doctor-search" placeholder="Search for a doctor...">
+        <button id="reset-search">Reset</button>
+      </div>
+      <p id="no-doctor-results" style="display: none;">No doctors found.</p>
+      {% if doctors %}
+        <div class="doctors-container">
+          {% for doctor in doctors %}
+          <div class="doctor-card">
+            <div class="doctor-image">
+              <img src="{{ doctor.profile_image.url }}" alt="{{ doctor.get_full_name }}">
+            </div>
+            <div class="doctor-info">
+              <h3>{{ doctor.get_full_name }}</h3>
+              <p>{{ doctor.specialization }}</p>
+              <p><strong>Qualification:</strong> {{ doctor.qualification }}</p>
+              <div class="doctor-buttons">
+                <a href="" class="button">Read More</a>
+                <a href="#make-appointment" class="button">Make Appointment</a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>No doctors present in this department.</p>
+      {% endif %}
+    </section>    
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-section contact-info">
+        <div class="contact-item">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>{{ content.address_line1 }}</span>
+          <span>{{ content.address_line2 }}</span>
+        </div>
+        <div class="contact-item">
+          <i class="fa-brands fa-whatsapp"></i>
+          <span>{{ content.phone_number }}</span>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-envelope"></i>
+          <span><a href="mailto:{{ content.email }}">{{ content.email }}</a></span>
+        </div>
+        <div class="contact-item">
+          <i class="fa-solid fa-copyright"></i>
+          <span><a href="#">{{ content.copyright_text }}</a></span>
+        </div>
+      </div>
+      <div class="footer-section about">
+        <h3>About the Company</h3>
+        <p>{{ content.about_text }}</p>
+        <div class="social">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#"><i class="fab fa-github"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+<script type="text/javascript" src="{% static 'js/websitejs/script.js' %}"></script>
+</html>

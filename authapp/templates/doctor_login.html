@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Doctor Registration Form</title>
+    <link rel="icon" type="image/x-icon" href="{{ content.favicon.url }}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/authcss/styles.css' %}">
+  </head>
+  <body>
+    <section class="container">
+      <header>Doctor Login Form</header>
+      {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+      <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+      <form action="#" class="form" method="post" enctype="multipart/form-data" id="registrationForm">
+        {% csrf_token %}
+        <div class="input-box">
+          <label>Email Address</label>
+          <input type="email" name="email" placeholder="Enter email address" required />
+        </div>
+
+        <div class="input-box">
+          <label>Password</label>
+          <input type="password" placeholder="Enter Password" name="password" required />
+        </div>
+
+        <button type="submit">Submit</button>
+        {% if error %}
+    <p>{{ error }}</p>
+  {% endif %}
+      </form>
+      <div class="login-link">
+        <p>Don't have an account ?? <a href="{% url 'doctor_register' %}">Register</a></p>
+        <a href="{% url 'forgot_password' %}">Forgot Password</a>
+      </div>
+    </section>
+  </body>
+</html>

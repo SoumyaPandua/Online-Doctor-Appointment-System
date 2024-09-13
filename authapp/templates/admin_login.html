@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Login Form</title>
+  <link rel="icon" type="image/x-icon" href="{{ content.favicon.url }}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/authcss/styles.css' %}">
+</head>
+
+<body>
+  <section class="container">
+    <header>Admin Login Form</header>
+    {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+      <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <form action="{% url 'admin_login' %}" class="form" method="post">
+      {% csrf_token %}
+      <div class="input-box">
+        <label>Email</label>
+        <input type="email" name="email" placeholder="Enter email" required />
+      </div>
+
+      <div class="input-box">
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Enter Password" required />
+      </div>
+
+      <button type="submit">Submit</button>
+      {% if error %}
+      <div class="error">{{ error }}</div>
+      {% endif %}
+    </form>
+    <div class="login-link">
+      <p>Don't have an account? <a href="{% url 'admin_register' %}">Register</a></p>
+      <a href="{% url 'forgot_password' %}">Forgot Password</a>
+    </div>
+  </section>
+</body>
+
+</html>

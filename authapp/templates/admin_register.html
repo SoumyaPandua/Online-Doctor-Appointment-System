@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Admin Registration Form</title>
+    <link rel="icon" type="image/x-icon" href="{{ content.favicon.url }}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/authcss/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  </head>
+  <body>
+    <section class="container">
+        <header>Registration Form</header>
+        <form action="#" class="form" method="post" enctype="multipart/form-data" id="registrationForm">
+          {% csrf_token %}
+          <div class="column">
+            <div class="input-box">
+              <label>First Name</label>
+              <input type="text" name="first_name" placeholder="Enter first name" required />
+            </div>
+            <div class="input-box">
+              <label>Last Name</label>
+              <input type="text" name="last_name" placeholder="Enter last name" required />
+            </div>
+          </div>
+    
+          <div class="column">
+            <div class="input-box">
+              <label>Email Address</label>
+              <input type="email" name="email" id="email" placeholder="Enter email address" required />
+            </div>
+          </div>
+    
+          <div class="input-box">
+            <label>Photo</label>
+            <input type="file" name="profile_image" placeholder="Upload photo" required />
+          </div>
+    
+          <div class="column">
+            <div class="input-box">
+                <label>Password</label>
+                <input type="password" name="password1" id="password1" placeholder="Enter Password" required />
+            </div>
+            <div class="input-box">
+                <label>Confirm Password</label>
+                <input type="password" name="password2" id="password2" placeholder="Enter Confirm Password" required />
+            </div>
+        </div>        
+    
+          <button type="submit" id="submitFormButton">Submit</button>
+        </form>
+        {% if error %}
+        <div class="error-message">{{ error }}</div>
+        {% endif %}
+        <div class="login-link">
+          Already have an account? <a href="{% url 'admin_login' %}">Login</a>
+        </div>
+    </section>     
+  </body>  
+</html>

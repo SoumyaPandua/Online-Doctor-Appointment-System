@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile</title>
+  <link rel="icon" type="image/x-icon" href="{{ content.favicon.url }}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/patientcss/styles.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <nav class="sidebar">
+        <div class="logo">
+            <h2>{{ request.session.user_name }} (Patient)</h2>
+        </div>
+        <ul class="nav-links">
+            <li><a href="{% url 'patient_profile' %}"><i class="fas fa-user-shield"></i> Profile</a></li>
+            <li class="dropdown">
+                <a href="" class="dropdown-toggle"><i class="fas fa-calendar"></i> My Appointments <i class="fas fa-caret-down"></i></a>
+                <ul class="dropdown-menu">
+                    <li><a href="{% url 'today_appointments' %}"><i class="fas fa-circle"></i> Today Appointments</a></li>
+                    <li><a href="{% url 'appointment_history' %}"><i class="fas fa-circle"></i> Appointments History</a></li>
+                </ul>
+            </li>
+            <li><a href="{% url 'patient_update_password' %}"><i class="fas fa-key"></i> Update Password</a></li>
+            <li><a href="{% url 'website' %}"><i class="fas fa-cog"></i> Support</a></li>
+            <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        <header>
+            <h2>Patient Dashboard</h2>
+            <div class="date"></div>
+            <div class="user-profile">
+                <span>{{ request.session.user_name }}</span>
+                <i class="fas fa-user"></i>
+            </div>
+        </header>
+
+      <div class="container-appointment">
+        <div class="appointment-card">
+          <h2>Appointment</h2>
+          <div class="appointment-info">
+            <p><strong>Appointment No.:</strong> {{ appointment.apt_no }}</p>
+            <p><strong>Appointment Date:</strong> {{ appointment.apt_date }}</p>
+            <p><strong>Appointment Time:</strong> {{ appointment.apt_time }}</p>
+            <hr>
+            <p><strong>Doctor Name:</strong> {{ doctor_profile.get_full_name }}</p>
+            <p><strong>Doctor Designation:</strong> {{ doctor_profile.designation }}</p>
+            <hr>
+            <p><strong>Consultation Fees:</strong> {{ doctor_profile.consultant_fees }}</p>
+            <p><strong>Consultation Fees Payment Status:</strong> <span class="badge paid">{{appointment.consultation_status}}</span></p>
+            <p><strong>Doctor Comment:</strong>{{ appointment.doctor_comment }}</p>
+            <hr>
+            <p><strong>Status:</strong> <span class="badge booked">{{appointment.status}}</span></p>
+          </div>
+          <div class="doctor-image">
+            <img src="{{ doctor_profile.profile_image.url }}" alt="Doctor Image">
+          </div>
+        </div>
+        <a href="{% url 'today_appointments' %}" class="back-button" style="text-decoration: none;">Back</a>
+      </div>
+
+
+
+    </div>
+
+  </div>
+  <script type="text/javascript" src="{% static 'js/patientjs/script.js' %}"></script>
+</body>
+
+</html>

@@ -1,0 +1,237 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ content.title }}</title>
+  <link rel="icon" type="image/x-icon"
+    href="{% if content.favicon %}{{ content.favicon.url }}{% else %}{% static 'images/default_favicon.ico' %}{% endif %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/websitecss/styles.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <img
+          src="{% if content.logo_image %}{{ content.logo_image.url }}{% else %}{% static 'images/default_logo.png' %}{% endif %}"
+          alt="Doctor Appointment Logo">
+      </div>
+      <ul class="nav-links">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About Us</a></li>
+        <li><a href="#departments">Departments</a></li>
+        <li><a href="#faq-section">FAQ</a></li>
+        <li><a href="#testimonial-section">Review</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li class="profile-menu">
+          {% if request.session.user_id %}
+          <a href="#">
+            <i class="fas fa-user-circle"></i> {{ request.session.user_name }}
+          </a>
+          <ul class="dropdown-menu">
+            {% if request.session.role == 'admin' %}
+            <li><a href="{% url 'admin_dashboard' %}">My Profile</a></li>
+            {% elif request.session.role == 'doctor' %}
+            <li><a href="{% url 'doctor_dashboard' %}">My Profile</a></li>
+            {% elif request.session.role == 'patient' %}
+            <li><a href="{% url 'patient_profile' %}">My Profile</a></li>
+            {% endif %}
+            <hr>
+            <li><a href="{% url 'logout' %}">Log Out</a></li>
+          </ul>
+          {% else %}
+          <a href="#">
+            <i class="fas fa-sign-in-alt"></i> Login
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'admin_login' %}">Admin</a></li>
+            <hr>
+            <li><a href="{% url 'doctor_login' %}">Doctor</a></li>
+            <hr>
+            <li><a href="{% url 'patient_login' %}">Patient</a></li>
+          </ul>
+          {% endif %}
+        </li>
+      </ul>
+      <div class="hamburger">
+        <i class="fas fa-bars"></i>
+      </div>
+    </nav>
+  </header>
+
+  <!-- doctor_booking.html -->
+  <section class="appointment-form-section" id="book-appointment">
+    <div class="container">
+      {% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+        <h2>Book an Appointment</h2>
+        <form class="appointment-form" action="{% url 'doctor_booking' doctor.id %}" method="POST">
+          {% csrf_token %}
+            <div class="form-group">
+                <label for="doctor-name">Doctor Name</label>
+                <input type="text" id="doctor-name" name="doctor-name" value="{{ doctor.get_full_name }}({{doctor.department}})" readonly required>
+            </div>
+
+            <div class="form-group">
+                <label for="patient-name">Patient Full Name</label>
+                <input type="text" id="patient-name" name="patient-name" value="{{ patient.user.get_full_name }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" value="{{ patient.user.email }}" readonly required>
+            </div>
+
+            <div class="form-group">
+                <label for="mobile">Mobile</label>
+                <input type="tel" id="mobile" name="mobile" value="{{ patient.phone }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="age">Age</label>
+                <input type="number" id="age" name="age" value="{{ patient_age }}" placeholder="Enter Age" readonly required>
+            </div>
+
+            <div class="form-group">
+                <label for="gender">Gender</label>
+                <select id="gender" name="gender" required>
+                    <option value="">Select Gender</option>
+                    <option value="male" {% if patient.gender == 'Male' %}selected{% endif %}>Male</option>
+                    <option value="female" {% if patient.gender == 'Female' %}selected{% endif %}>Female</option>
+                    <option value="other" {% if patient.gender == 'Other' %}selected{% endif %}>Other</option>
+                </select>
+            </div>        
+
+            <div class="form-group">
+                <label for="date">Appointment Date</label>
+                <select id="date" name="date" required>
+                    <option value="">Select Appointment date</option>
+                    {% for date in available_dates %}
+                    <option value="{{ date|date:'Y-m-d' }}">{{ date }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group" id="shift-container" style="display:none;">
+                <label for="shift">Shift</label>
+                <select id="shift" name="shift" required>
+                    <option value="">Select Shift</option>
+                </select>
+            </div>
+            
+            <p id="no-shifts-message" style="color: red;"></p>
+
+            <div class="form-group">
+                <label for="dob">Date of Birth</label>
+                <input type="date" id="dob" name="dob" value="{{ patient.dob|date:'Y-m-d' }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="comment">Comment</label>
+                <textarea id="comment" name="comment" rows="4" placeholder="Enter any comments or concerns"></textarea>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn" id="book-appointment-btn">BOOK APPOINTMENT</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-section contact-info">
+        <div class="contact-item">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>{{ content.address_line1 }}</span>
+          <span>{{ content.address_line2 }}</span>
+        </div>
+        <div class="contact-item">
+          <i class="fa-brands fa-whatsapp"></i>
+          <span>{{ content.phone_number }}</span>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-envelope"></i>
+          <span><a href="mailto:{{ content.email }}">{{ content.email }}</a></span>
+        </div>
+        <div class="contact-item">
+          <i class="fa-solid fa-copyright"></i>
+          <span><a href="">{{ content.copyright_text }}</a></span>
+        </div>
+      </div>
+      <div class="footer-section about">
+        <h3>About the Company</h3>
+        <p>{{ content.about_text }}</p>
+        <div class="social">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#"><i class="fab fa-github"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+<script type="text/javascript" src="{% static 'js/websitejs/script.js' %}"></script>
+<script>
+  document.getElementById('date').addEventListener('change', function () {
+    const date = this.value;
+    const doctorId = "{{ doctor.id }}";
+    const shiftContainer = document.getElementById('shift-container');
+    const shiftSelect = document.getElementById('shift');
+    const noShiftsMessage = document.getElementById('no-shifts-message');
+
+    if (date) {
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: new URLSearchParams({ date, doctor_id: doctorId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            shiftSelect.innerHTML = '<option value="">Select Shift</option>';
+
+            if (data.message) {
+                noShiftsMessage.textContent = data.message;
+                shiftContainer.style.display = 'none';
+            } else if (data.shifts.length > 0) {
+                data.shifts.forEach(shift => {
+                    const option = document.createElement('option');
+                    option.value = shift;
+                    option.textContent = shift.charAt(0).toUpperCase() + shift.slice(1);
+                    shiftSelect.appendChild(option);
+                });
+                shiftContainer.style.display = 'block';
+                noShiftsMessage.textContent = '';
+            } else {
+                noShiftsMessage.textContent = 'No shifts set by doctor';
+                shiftContainer.style.display = 'none';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching shifts:', error);
+            noShiftsMessage.textContent = 'Error loading shifts, please try again later.';
+            shiftContainer.style.display = 'none';
+        });
+    } else {
+        shiftContainer.style.display = 'none';
+        noShiftsMessage.textContent = '';
+    }
+});
+  </script>  
+</html>

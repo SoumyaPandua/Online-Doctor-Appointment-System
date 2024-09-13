@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link rel="icon" type="image/x-icon" href="{{ content.favicon.url }}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/doctorcss/styles.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <nav class="sidebar">
+      <div class="logo">
+        <h2>{{ request.session.user_name }}({{ request.session.department_name }})</h2>
+      </div>
+      <ul class="nav-links">
+        <li><a href="{% url 'doctor_dashboard' %}" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li class="dropdown">
+          <a href="" class="dropdown-toggle"><i class="fas fa-calendar"></i> Appointments <i class="fas fa-caret-down"></i></a>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'doctor_appointments' %}"><i class="fas fa-circle"></i> All Appointments</a></li>
+            <li><a href="{% url 'all_appointments' %}"><i class="fas fa-circle"></i> Appointments History</a></li>
+          </ul>
+        </li>
+        <li><a href="{% url 'doctor_patient_list' %}"><i class="fas fa-user-injured"></i> Patients</a></li>
+        <li><a href="{% url 'doctor_profile' %}"><i class="fas fa-user-shield"></i> Profile</a></li>
+        <li><a href="{% url 'doctor_timing' %}"><i class="fas fa-cog"></i> Timings</a></li>
+        <li><a href="{% url 'doctor_update_password' %}"><i class="fas fa-key"></i> Change Password</a></li>
+        <li><a href="{% url 'logout' %}" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+      </ul>
+    </nav>
+
+    <div class="main-content">
+      <header>
+        <h2>Doctor Dashboard</h2>
+        <div class="date"></div>
+        <div class="user-profile">
+          <span>{{ request.session.user_name }}</span>
+          <i class="fas fa-user"></i>
+        </div>
+      </header>
+
+
+      <div class="timings-container">
+        <h2>Doctor {{ request.user.first_name }} {{ request.user.last_name }}'s Timings</h2>
+        <form method="POST" action="{% url 'add_timing' %}">
+            {% csrf_token %}
+            <div class="timing-inputs">
+                <div class="input-group">
+                    <label for="day">Select a day</label>
+                    <select id="day" name="day">
+                        <option value="monday">Monday</option>
+                        <option value="tuesday">Tuesday</option>
+                        <option value="wednesday">Wednesday</option>
+                        <option value="thursday">Thursday</option>
+                        <option value="friday">Friday</option>
+                        <option value="saturday">Saturday</option>
+                        <option value="sunday">Sunday</option>
+                    </select>
+                </div>
+    
+                <div class="input-group">
+                    <label for="shift">Select a shift</label>
+                    <select id="shift" name="shift">
+                        <option value="shift1">Shift 1</option>
+                        <option value="shift2">Shift 2</option>
+                    </select>
+                </div>
+    
+                <div class="input-group">
+                    <label for="startTime">Start Time</label>
+                    <input type="time" id="startTime" name="startTime">
+                </div>
+    
+                <div class="input-group">
+                    <label for="endTime">End Time</label>
+                    <input type="time" id="endTime" name="endTime">
+                </div>
+    
+                <div class="input-group">
+                    <label for="avgConsultTime">Avg Consultation time</label>
+                    <select id="avgConsultTime" name="avg_consult_time">
+                        <option value="10">10 Minutes</option>
+                        <option value="15">15 Minutes</option>
+                        <option value="20">20 Minutes</option>
+                        <option value="25">25 Minutes</option>
+                        <option value="30">30 Minutes</option>
+                    </select>                  
+                </div>
+    
+                <button class="btn-add">Add</button>
+            </div>
+        </form>
+    
+        <table class="timings-table">
+            <thead>
+                <tr>
+                    <th>Days</th>
+                    <th>Shifts</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Avg Consultation Time (in mins)</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for timing in timings %}
+                <tr>
+                    <td>{{ timing.get_day_display }}</td>
+                    <td>{{ timing.get_shift_display }}</td>
+                    <td>{{ timing.start_time|time:'H:i' }}</td>
+                    <td>{{ timing.end_time|time:'H:i' }}</td>
+                    <td>{{ timing.avg_consult_time }} Minutes</td>
+                    <td>
+                        <a href="{% url 'update_timing' timing.pk %}" class="btn-action update">Update</a>
+                        <a href="{% url 'delete_timing' timing.pk %}" class="btn-action delete">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>             
+      <script type="text/javascript" src="{% static 'js/doctorjs/script.js' %}"></script>
+</body>
+</html>
+</div>

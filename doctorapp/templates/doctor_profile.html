@@ -1,0 +1,151 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link rel="icon" type="image/x-icon" href="{{ content.favicon.url }}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/doctorcss/styles.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <nav class="sidebar">
+      <div class="logo">
+        <h2>{{ request.session.user_name }}({{ request.session.department_name }})</h2>
+      </div>
+      <ul class="nav-links">
+        <li><a href="{% url 'doctor_dashboard' %}" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li class="dropdown">
+          <a href="" class="dropdown-toggle"><i class="fas fa-calendar"></i> Appointments <i class="fas fa-caret-down"></i></a>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'doctor_appointments' %}"><i class="fas fa-circle"></i> All Appointments</a></li>
+            <li><a href="{% url 'all_appointments' %}"><i class="fas fa-circle"></i> Appointments History</a></li>
+          </ul>
+        </li>
+        <li><a href="{% url 'doctor_patient_list' %}"><i class="fas fa-user-injured"></i> Patients</a></li>
+        <li><a href="{% url 'doctor_profile' %}"><i class="fas fa-user-shield"></i> Profile</a></li>
+        <li><a href="{% url 'doctor_timing' %}"><i class="fas fa-cog"></i> Timings</a></li>
+        <li><a href="{% url 'doctor_update_password' %}"><i class="fas fa-key"></i> Change Password</a></li>
+        <li><a href="{% url 'logout' %}" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+      </ul>
+    </nav>
+
+    <div class="main-content">
+      <header>
+        <h2>Doctor Dashboard</h2>
+        <div class="date"></div>
+        <div class="user-profile">
+          <span>{{ request.session.user_name }}</span>
+          <i class="fas fa-user"></i>
+        </div>
+      </header>
+            <div class="box-container">
+                <div class="box">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="first-name">First Name</label>
+                                <input type="text" id="first-name" name="first-name"
+                                    value="{{ doctor_details.first_name }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="last-name">Last Name</label>
+                                <input type="text" id="last-name" name="last-name"
+                                    value="{{ doctor_details.last_name }}">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" value="{{ doctor_details.phone }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" value="{{ doctor_details.email }}" disabled>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="department">Select Department</label>
+                                <select id="department" name="department">
+                                    <option value="">Select Department</option>
+                                    {% for dept in departments %}
+                                    <option value="{{ dept.id }}" {% if dept.id == doctor_details.department %}selected{% endif %}>
+                                        {{ dept.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="gender">Gender</label>
+                                <select id="gender" name="gender">
+                                    <option value="male" {% if doctor_details.gender == "male" %}selected{% endif %}>Male</option>
+                                    <option value="female" {% if doctor_details.gender == "female" %}selected{% endif %}>Female</option>
+                                    <option value="other" {% if doctor_details.gender == "other" %}selected{% endif %}>Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="designation">Designation</label>
+                                <input type="text" id="designation" name="designation"
+                                    value="{{ doctor_details.designation }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="qualification">Qualification</label>
+                                <input type="text" id="qualification" name="qualification"
+                                    value="{{ doctor_details.qualification }}">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="experience">Experience (Years)</label>
+                                <input type="number" id="experience" name="experience"
+                                    value="{{ doctor_details.experience }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="specialization">Specialization</label>
+                                <input type="text" id="specialization" name="specialization" maxlength="100"
+                                    value="{{ doctor_details.specialization }}">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="bio">Bio</label>
+                                <textarea id="bio" name="bio" maxlength="500">{{ doctor_details.bio }}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="consultant-fees">Consultant Fees</label>
+                                <input type="number" id="consultant-fees" name="consultant-fees"
+                                    value="{{ doctor_details.consultant_fees }}">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="doctor-image">Upload Doctor Image</label>
+                                <input type="file" id="doctor-image" name="doctor-image" accept="image/">
+                                {% if doctor_details.profile_image %}
+                                <img src="{{ doctor_details.profile_image }}" alt="Profile Image" width="100">
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <label for="address">Address</label>
+                                <input type="text" id="address" name="address" maxlength="255"
+                                    value="{{ doctor_details.address }}">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <button type="submit" class="btn submit-btn">Update</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="{% static 'js/doctorjs/script.js' %}"></script>
+</body>
+
+</html>

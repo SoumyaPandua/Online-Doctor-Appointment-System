@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile</title>
+  <link rel="icon" type="image/x-icon" href="{{ content.favicon.url }}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/patientcss/styles.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <nav class="sidebar">
+        <div class="logo">
+            <h2>{{ request.session.user_name }} (Patient)</h2>
+        </div>
+        <ul class="nav-links">
+            <li><a href="{% url 'patient_profile' %}"><i class="fas fa-user-shield"></i> Profile</a></li>
+            <li class="dropdown">
+                <a href="" class="dropdown-toggle"><i class="fas fa-calendar"></i> My Appointments <i class="fas fa-caret-down"></i></a>
+                <ul class="dropdown-menu">
+                    <li><a href="{% url 'today_appointments' %}"><i class="fas fa-circle"></i> Today Appointments</a></li>
+                    <li><a href="{% url 'appointment_history' %}"><i class="fas fa-circle"></i> Appointments History</a></li>
+                </ul>
+            </li>
+            <li><a href="{% url 'patient_update_password' %}"><i class="fas fa-key"></i> Update Password</a></li>
+            <li><a href="{% url 'website' %}"><i class="fas fa-cog"></i> Support</a></li>
+            <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        <header>
+            <h2>Patient Dashboard</h2>
+            <div class="date"></div>
+            <div class="user-profile">
+                <span>{{ request.session.user_name }}</span>
+                <i class="fas fa-user"></i>
+            </div>
+        </header>
+
+        <section class="appointments">
+          <h3>Appointments</h3>
+          <div class="search-filter-reset">
+              <input type="month" id="month-picker" class="month-picker">
+              <a href="#" class="filter">Filter</a>
+              <a href="#" class="reset">Reset</a>
+          </div>
+          <table class="appointments-table">
+              <thead>
+                  <tr>
+                      <th>APT. NO.</th>
+                      <th>APT. DATE</th>
+                      <th>PATIENT NAME</th>
+                      <th>EMAIL</th>
+                      <th>PHONE</th>
+                      <th>STATUS</th>
+                      <th>DOCTOR NAME</th>
+                      <th>ACTION</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for appointment in appointments %}
+                  <tr>
+                      <td>{{ appointment.apt_no }}</td>
+                      <td>{{ appointment.apt_date }}</td>
+                      <td>{{ appointment.patient_name }}</td>
+                      <td>{{ appointment.patient_email }}</td>
+                      <td>{{ appointment.patient_phone }}</td>
+                      <td><span class="status {{ appointment.status|lower }}">{{ appointment.status }}</span></td>
+                      <td>{{ appointment.doctor.get_full_name }}</td>
+                      <td><a href="{% url 'view_appointments' apt_no=appointment.apt_no %}" class="view">View</a></td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                      <td colspan="8">No appointments found.</td>
+                  </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+          <div class="pagination-text">
+              <p>Showing 1 out of {{ appointments|length }} entries</p>
+          </div>
+          <div class="pagination">
+              <a href="#" class="prev">Previous</a>
+              <a href="#" class="next">Next</a>
+          </div>
+      </section>
+      
+  </div>
+
+    </div>
+  </body>
+  <script type="text/javascript" src="{% static 'js/patientjs/script.js' %}"></script>
+</html>
